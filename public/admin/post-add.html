@@ -25,15 +25,15 @@
       <!-- <div class="alert alert-danger">
         <strong>错误！</strong>发生XXX错误
       </div> -->
-      <form class="row">
+      <form class="row" id="addForm">
         <div class="col-md-9">
           <div class="form-group">
             <label for="title">标题</label>
-            <input id="title" class="form-control input-lg" type="text" placeholder="文章标题">
+            <input name="title" id="title" class="form-control input-lg" type="text" placeholder="文章标题">
           </div>
           <div class="form-group">
             <label for="content">内容</label>
-            <textarea id="content" class="form-control input-lg" cols="30" rows="10" placeholder="内容"></textarea>
+            <textarea name="content" id="content" class="form-control input-lg" cols="30" rows="10" placeholder="内容"></textarea>
           </div>
         </div>
         <div class="col-md-3">
@@ -41,22 +41,25 @@
             <label for="feature">文章封面</label>
             <!-- show when image chose -->
             <img class="help-block thumbnail" style="display: none">
-            <input id="feature" class="form-control" type="file">
+
+            <input type="hidden" name="thumbnail" id="hiddenImg">
+
+            <input  id="feature" class="form-control" type="file">
           </div>
           <div class="form-group">
             <label for="category">所属分类</label>
-            <select id="category" class="form-control">
-              <option value="1">未分类</option>
-              <option value="2">潮生活</option>
+            <select name="category" id="category" class="form-control">
+              <!-- <option value="1">未分类</option> -->
+              <!-- <option value="2">潮生活</option> -->
             </select>
           </div>
           <div class="form-group">
             <label for="created">发布时间</label>
-            <input id="created" class="form-control" type="date">
+            <input name="createAt" id="created" class="form-control" type="date">
           </div>
           <div class="form-group">
             <label for="status">状态</label>
-            <select id="status" class="form-control">
+            <select name="state" id="status" class="form-control">
               <option value="0">草稿</option>
               <option value="1">已发布</option>
             </select>
@@ -108,5 +111,61 @@
 
   <script src="../assets/vendors/jquery/jquery.js"></script>
   <script src="../assets/vendors/bootstrap/js/bootstrap.js"></script>
+  <script src="../assets/vendors/art-template/template-web.js"></script>
+  <script type="text/html" id="categoryTpl">
+    {{each data}}
+  <option value="{{$value._id}}">{{$value.title}}</option>
+  {{/each}}
+  
+  </script>
+  <script>
+  // 实现分类
+  $.ajax({
+    type:'get',//get或post
+    url:'/categories',//请求的地址
+    data:{},
+    success:function(result){//成功的回调函数
+     var html = template('categoryTpl',{data:result})
+     $('#category').html(html)
+    }
+  })
+  
+
+  // 图片的上传和预览
+  $('#feature').on('change',function(){
+    var formData = new FormData()
+    formData.append('avatar',this.files[0])
+    $.ajax({
+      type:'post',//get或post
+      url:'/upload',//请求的地址
+      contentType:false,
+      processData:false,
+      data:formData,
+      success:function(result){//成功的回调函数
+        console.log(result);
+        $('.thumbnail').attr('src',result[0].avatar).show()
+        $('#hiddenImg').val(result[0].avatar)
+      }
+    })
+  })
+
+  // 文章上传
+  $('#addForm').on('submit',function(){
+    $.ajax({
+      type:'post',//get或post
+      url:'/posts',//请求的地址
+      data:$(this).serialize(),
+      success:function(result){//成功的回调函数
+        location.href = 'posts.html'
+      }
+    })
+    return false;
+  })
+  
+  
+  
+  </script>
+
+
 </body>
 </html>
