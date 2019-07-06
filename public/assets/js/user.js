@@ -34,7 +34,6 @@ $('#userForm').on('submit',function() {
 $('#formBox').on('change','#avatar',function() {
   var formData = new FormData();
   formData.append('avatar',this.files[0])
-  
   $.ajax({
     type:'post',//get或post
     url:'/upload',//请求的地址
@@ -44,6 +43,7 @@ $('#formBox').on('change','#avatar',function() {
     success:function(result){//成功的回调函数
       $('#preview').attr('src',result[0].avatar)
       $('#hiddenImg').val(result[0].avatar)
+      // console.log(result[0].avatar);
     }
   })
 })
@@ -142,7 +142,7 @@ $('#userBox').on('change','.status',function(){
 })
 
 
-
+// 批量删除
 $('#deleteMany').on('click',function(){
   if(confirm('确定要删嘛?')) {
   var selectAll = $('#userBox').find('.status').filter(':checked');
